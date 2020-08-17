@@ -23,7 +23,7 @@ public class Cliente {
     private Integer id;
 
     @Column(name = "nome", length = 100)
-    @NotEmpty(message = "Campo nome é obrigatório.")
+    @NotEmpty(message = "{campo.nome.obrigatorio}")
     private String nome;
 
     @JsonIgnore
@@ -31,8 +31,8 @@ public class Cliente {
     private Set<Pedido> pedidos;
 
     @Column(name = "cpf", length = 11)
-    @NotEmpty(message = "Campo CPF é obrigatório.")
-    @CPF(message = "Informe um CPF válido.")
+    @NotEmpty(message = "{campo.cpf.obrigatorio}")
+    @CPF(message = "{campo.cpf.invalido}")
     private String cpf;
 
     public Cliente(Integer id, String nome) {
