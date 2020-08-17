@@ -4,10 +4,12 @@ import io.github.thiagocaandrade.domain.entity.Cliente;
 import io.github.thiagocaandrade.domain.entity.ItemPedido;
 import io.github.thiagocaandrade.domain.entity.Pedido;
 import io.github.thiagocaandrade.domain.entity.Produto;
+import io.github.thiagocaandrade.domain.enums.StatusPedido;
 import io.github.thiagocaandrade.domain.repository.Clientes;
 import io.github.thiagocaandrade.domain.repository.ItemsPedido;
 import io.github.thiagocaandrade.domain.repository.Pedidos;
 import io.github.thiagocaandrade.domain.repository.Produtos;
+import io.github.thiagocaandrade.exception.PedidoNaoEncontradoException;
 import io.github.thiagocaandrade.exception.RegraNegocioException;
 import io.github.thiagocaandrade.rest.dto.ItemPedidoDTO;
 import io.github.thiagocaandrade.rest.dto.PedidoDTO;
@@ -43,8 +45,10 @@ public class PedidoServiceImpl implements PedidoService {
 
 
         Pedido pedido = new Pedido();
+        pedido.setTotal(dto.getTotal());
         pedido.setDataPedido(LocalDate.now());
         pedido.setCliente(cliente);
+        pedido.setStatus(StatusPedido.REALIZADO);
 
         List<ItemPedido> itemsPedido = converterItems(pedido, dto.getItems());
         repository.save(pedido);
@@ -56,6 +60,16 @@ public class PedidoServiceImpl implements PedidoService {
     @Override
     public Optional<Pedido> obterPedidoCompleto(Integer id) {
         return repository.findByIdFetchItens(id);
+    }
+
+    @Override
+    public void atualizaStatus(Integer id, StatusPedido statusPedido) {
+        repository
+                .findById(id)
+                .map(pedido -> {
+                    pedido.setStatus(statusPedido);
+                    return repository.save(pedido);
+                }).orElseThrow(() -> new PedidoNaoEncontradoException());
     }
 
 
